@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { generateStepByStepGuide, generateAIStrategicOverrides } from '../services/aiGuideService';
 import { UI_TRANSLATIONS } from '../data/translations';
-import { Sparkles, Moon, Sun, CheckCircle2, Circle, ShieldAlert, Key, Zap, Info, Edit3, Target, Scale, Shield, Skull, Plus } from 'lucide-react';
+import { Sparkles, Moon, Sun, CheckCircle2, Circle, ShieldAlert, Key, Zap, Info, Edit3, Target, Scale, Shield, Skull, Plus, Globe, Cpu } from 'lucide-react';
 
 export default function AIGuideView({ currentPhase, dayNumber, players, language }) {
   const [activeSubTab, setActiveSubTab] = useState('steps'); // 'steps', 'advisor', 'notes'
@@ -58,7 +58,7 @@ export default function AIGuideView({ currentPhase, dayNumber, players, language
           <div>
             <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#f3e8ff' }}>{t.llmAssistant}</div>
             <div style={{ fontSize: '0.75rem', color: '#d8b4fe' }}>
-              {apiKey ? t.liveGemini : t.builtInRules}
+              {apiKey ? (isVi ? '⚡ Đã Kết Nối Gemini 2.0 Flash / Vercel Gateway' : '⚡ Live Gemini / Gateway Connected') : t.builtInRules}
             </div>
           </div>
         </div>
@@ -67,7 +67,7 @@ export default function AIGuideView({ currentPhase, dayNumber, players, language
           onClick={() => setShowApiKeyModal(true)}
           style={{ background: 'rgba(255, 255, 255, 0.1)', border: '1px solid rgba(255, 255, 255, 0.2)', color: '#fff', borderRadius: '8px', padding: '6px 10px', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
         >
-          <Key size={12} /> Key
+          <Cpu size={12} /> Model
         </button>
       </div>
 
@@ -274,7 +274,6 @@ export default function AIGuideView({ currentPhase, dayNumber, players, language
               style={{ width: '100%', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '12px', color: '#fff', fontSize: '0.85rem', lineHeight: '1.5', resize: 'vertical' }}
             />
 
-            {/* QUICK PRESET TAGS */}
             <div style={{ marginTop: '12px' }}>
               <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '6px' }}>
                 ⚡ {isVi ? 'Chạm Thêm Nhanh Biến Số:' : 'Quick Insert Variable Tags:'}
@@ -301,20 +300,53 @@ export default function AIGuideView({ currentPhase, dayNumber, players, language
         </div>
       )}
 
+      {/* AI MODEL & VERCEL GATEWAY MODAL */}
       {showApiKeyModal && (
         <div className="modal-overlay" onClick={() => setShowApiKeyModal(false)}>
           <div className="modal-sheet" onClick={e => e.stopPropagation()}>
-            <h3 className="font-serif" style={{ color: 'var(--accent-gold)', marginBottom: '12px' }}>Gemini LLM Settings</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <h3 className="font-serif" style={{ color: 'var(--accent-gold)' }}>
+                {isVi ? 'Cấu Hình AI Model & Vercel Gateway' : 'AI Model & Gateway Config'}
+              </h3>
+              <button onClick={() => setShowApiKeyModal(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}>✕</button>
+            </div>
+
+            <div style={{ background: 'rgba(16, 185, 129, 0.12)', border: '1px solid #10b981', borderRadius: '12px', padding: '12px', marginBottom: '14px' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#10b981', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Zap size={16} /> {isVi ? 'Model Khuyên Dùng Miễn Phí 100%:' : 'Recommended 100% Free Model:'}
+              </div>
+              <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#fff' }}>Google Gemini 2.0 Flash / Gemini 1.5 Flash</div>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px', lineHeight: '1.4' }}>
+                {isVi 
+                  ? 'Google miễn phí 15 yêu cầu/phút tại aistudio.google.com. Tốc độ siêu nhanh dưới 1 giây, phản hồi tiếng Việt chuẩn xác.'
+                  : 'Google provides 15 free requests/min at aistudio.google.com. Ultra-fast <1s response time.'}
+              </p>
+            </div>
+
+            <div style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '12px', marginBottom: '14px' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent-gold)', marginBottom: '4px' }}>
+                🌐 Vercel AI Gateway
+              </div>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
+                {isVi 
+                  ? 'Khi deploy trên Vercel, bạn có thể thêm biến GEMINI_API_KEY trong Vercel Project Settings để toàn bộ người chơi sử dụng tự động mà không cần nhập key thủ công!'
+                  : 'Add GEMINI_API_KEY in Vercel Project Settings for automatic serverless gateway routing!'}
+              </p>
+            </div>
+
+            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>
+              {isVi ? 'Nhập Google Gemini API Key Thủ Công (Tùy chọn)' : 'Enter Custom Gemini API Key (Optional)'}
+            </label>
             <input
               type="password"
-              placeholder="Enter Gemini API Key..."
+              placeholder="AIzaSy..."
               value={apiKey}
               onChange={e => setApiKey(e.target.value)}
               style={{ width: '100%', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '10px 12px', color: '#fff', marginBottom: '14px' }}
             />
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSaveApiKey}>Save Key</button>
-              <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setShowApiKeyModal(false)}>Cancel</button>
+              <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSaveApiKey}>{isVi ? 'Lưu Cấu Hình' : 'Save Config'}</button>
+              <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setShowApiKeyModal(false)}>{isVi ? 'Hủy' : 'Cancel'}</button>
             </div>
           </div>
         </div>
