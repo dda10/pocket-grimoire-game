@@ -87,63 +87,66 @@ export default function GrimoireView({ players, setPlayers, scriptRoles, onOpenR
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {/* Top Toolbar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-card)', padding: '10px 14px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-card)', padding: '12px 16px', borderRadius: '14px', border: '1px solid var(--border-color)', backdropFilter: 'blur(8px)' }}>
         <div>
-          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+          <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
             {t.seatedPlayers} ({players.length})
           </span>
-          <div style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}>
+          <div style={{ fontSize: '0.78rem', color: 'var(--accent-gold)', fontWeight: 600, marginTop: '2px' }}>
             {t.alive}: {players.filter(p => p.isAlive).length} | {t.dead}: {players.filter(p => !p.isAlive).length}
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '6px' }}>
+        <div style={{ display: 'flex', gap: '8px' }}>
           <button className="btn btn-outline-gold btn-sm" onClick={onStartPlayerSetup} title="Pass-the-phone player setup">
-            <Smartphone size={14} /> {t.passPhone}
+            <Smartphone size={15} /> {t.passPhone}
           </button>
           <button
             className={`btn btn-sm ${viewMode === 'list' ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setViewMode('list')}
+            title="List View"
           >
-            <List size={14} />
+            <List size={15} />
           </button>
           <button
             className={`btn btn-sm ${viewMode === 'circle' ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setViewMode('circle')}
+            title="Circle Seating Ring"
           >
-            <Circle size={14} />
+            <Circle size={15} />
           </button>
         </div>
       </div>
 
       {/* CIRCLE RING VIEW */}
       {viewMode === 'circle' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textAlign: 'center', fontWeight: 600 }}>
             {t.dragHint}
           </div>
 
           <div style={{ 
             position: 'relative', 
-            height: '360px', 
-            background: 'radial-gradient(circle, #1a1d2b 0%, #090a0f 70%)', 
-            borderRadius: '20px', 
-            border: '1px solid var(--border-color)',
+            height: '390px', 
+            background: 'radial-gradient(circle, #1a1d2b 0%, #090a0f 80%)', 
+            borderRadius: '24px', 
+            border: '1px solid var(--border-glow)',
+            boxShadow: 'inset 0 0 40px rgba(0,0,0,0.8), 0 0 20px rgba(212, 175, 55, 0.1)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             overflow: 'hidden'
           }}>
-            <div style={{ position: 'absolute', color: 'rgba(212, 175, 55, 0.08)', textAlign: 'center' }}>
-              <Skull size={130} />
-              <div className="font-serif" style={{ fontSize: '0.95rem', marginTop: '4px', letterSpacing: '2px' }}>POCKET GRIMOIRE</div>
+            <div style={{ position: 'absolute', color: 'rgba(212, 175, 55, 0.08)', textAlign: 'center', pointerEvents: 'none' }}>
+              <Skull size={140} />
+              <div className="font-serif" style={{ fontSize: '1rem', marginTop: '6px', letterSpacing: '3px', fontWeight: 900 }}>POCKET GRIMOIRE</div>
             </div>
 
             {players.map((player, idx) => {
               const localized = getLocalizedRole(player.role, language);
               const total = players.length;
               const angle = (idx / total) * 2 * Math.PI - Math.PI / 2;
-              const radius = 130;
+              const radius = 140;
               const x = Math.cos(angle) * radius;
               const y = Math.sin(angle) * radius;
 
@@ -167,8 +170,8 @@ export default function GrimoireView({ players, setPlayers, scriptRoles, onOpenR
                   style={{
                     position: 'absolute',
                     transform: `translate(${x}px, ${y}px) scale(${isDragOver ? 1.2 : isDragging ? 0.85 : 1})`,
-                    width: '64px',
-                    height: '64px',
+                    width: '68px',
+                    height: '68px',
                     borderRadius: '50%',
                     background: player.isAlive ? '#1c1f2e' : '#140c0e',
                     backgroundImage: 'url(/img/token/character-token-noise.webp)',
@@ -179,16 +182,16 @@ export default function GrimoireView({ players, setPlayers, scriptRoles, onOpenR
                     alignItems: 'center',
                     justifyContent: 'center',
                     cursor: 'grab',
-                    boxShadow: isDragOver ? '0 0 20px #f59e0b' : player.isAlive ? `0 0 14px ${borderColor}60` : 'none',
-                    opacity: isDragging ? 0.4 : player.isAlive ? 1 : 0.6,
-                    transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-                    padding: '2px',
+                    boxShadow: isDragOver ? '0 0 24px #f59e0b' : player.isAlive ? `0 0 16px ${borderColor}80` : 'none',
+                    opacity: isDragging ? 0.4 : player.isAlive ? 1 : 0.65,
+                    transition: 'transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease',
+                    padding: '3px',
                     zIndex: isDragOver ? 20 : 10
                   }}
                 >
                   {!player.isAlive && (
-                    <div style={{ position: 'absolute', top: -6, right: -6, background: '#ef4444', borderRadius: '50%', padding: '2px', boxShadow: '0 0 6px #000', zIndex: 5 }}>
-                      <Skull size={12} color="#fff" />
+                    <div style={{ position: 'absolute', top: -6, right: -6, background: '#ef4444', borderRadius: '50%', padding: '3px', boxShadow: '0 0 8px #000', zIndex: 5 }}>
+                      <Skull size={13} color="#fff" />
                     </div>
                   )}
                   
@@ -196,13 +199,13 @@ export default function GrimoireView({ players, setPlayers, scriptRoles, onOpenR
                     <img 
                       src={localized.image} 
                       alt={localized.name} 
-                      style={{ width: '36px', height: '36px', objectFit: 'contain', pointerEvents: 'none' }}
+                      style={{ width: '38px', height: '38px', objectFit: 'contain', pointerEvents: 'none' }}
                     />
                   ) : (
-                    <User size={22} color="var(--text-muted)" style={{ pointerEvents: 'none' }} />
+                    <User size={24} color="var(--text-muted)" style={{ pointerEvents: 'none' }} />
                   )}
 
-                  <div style={{ fontSize: '0.6rem', fontWeight: 800, textAlign: 'center', padding: '0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '56px', color: '#fff', textShadow: '0 1px 3px #000', pointerEvents: 'none' }}>
+                  <div style={{ fontSize: '0.65rem', fontWeight: 800, textAlign: 'center', padding: '0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '60px', color: '#fff', textShadow: '0 1px 4px #000', pointerEvents: 'none' }}>
                     {player.name}
                   </div>
                 </div>
@@ -214,7 +217,7 @@ export default function GrimoireView({ players, setPlayers, scriptRoles, onOpenR
 
       {/* LIST VIEW */}
       {viewMode === 'list' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {players.map((player, idx) => {
             const localized = getLocalizedRole(player.role, language);
             const alignment = localized?.type || 'townsfolk';
@@ -224,48 +227,50 @@ export default function GrimoireView({ players, setPlayers, scriptRoles, onOpenR
                 style={{
                   background: 'var(--bg-card)',
                   border: `1px solid ${selectedPlayerId === player.id ? 'var(--accent-gold)' : 'var(--border-color)'}`,
-                  borderRadius: '12px',
-                  padding: '12px 14px',
+                  borderRadius: '14px',
+                  padding: '14px 16px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  gap: '10px',
+                  gap: '12px',
                   opacity: player.isAlive ? 1 : 0.65,
-                  transition: 'all 0.2s ease'
+                  boxShadow: selectedPlayerId === player.id ? '0 0 16px rgba(212, 175, 55, 0.2)' : '0 2px 8px rgba(0,0,0,0.3)',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer'
                 }}
                 onClick={() => setSelectedPlayerId(player.id)}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1 }}>
                   {localized?.image ? (
                     <div style={{
-                      width: '48px',
-                      height: '48px',
+                      width: '52px',
+                      height: '52px',
                       borderRadius: '50%',
                       background: '#1c1f2e',
                       backgroundImage: 'url(/img/token/character-token-noise.webp)',
                       backgroundSize: 'cover',
-                      border: `2px solid var(--align-${alignment})`,
+                      border: `2.5px solid var(--align-${alignment})`,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0,
                       padding: '4px',
-                      boxShadow: `0 0 8px var(--align-${alignment})40`
+                      boxShadow: `0 0 10px var(--align-${alignment})50`
                     }}>
                       <img src={localized.image} alt={localized.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                     </div>
                   ) : (
                     <div style={{ 
-                      width: '48px', 
-                      height: '48px', 
+                      width: '52px', 
+                      height: '52px', 
                       borderRadius: '50%', 
                       background: 'var(--bg-secondary)', 
                       border: '1px solid var(--border-color)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontWeight: 700,
-                      fontSize: '0.9rem',
+                      fontWeight: 800,
+                      fontSize: '1rem',
                       color: 'var(--accent-gold)',
                       flexShrink: 0
                     }}>
@@ -275,7 +280,7 @@ export default function GrimoireView({ players, setPlayers, scriptRoles, onOpenR
 
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontWeight: 700, fontSize: '0.95rem', color: player.isAlive ? 'var(--text-primary)' : 'var(--text-muted)', textDecoration: player.isAlive ? 'none' : 'line-through' }}>
+                      <span style={{ fontWeight: 700, fontSize: '1rem', color: player.isAlive ? 'var(--text-primary)' : 'var(--text-muted)', textDecoration: player.isAlive ? 'none' : 'line-through' }}>
                         {player.name}
                       </span>
                       {localized && (
@@ -285,14 +290,14 @@ export default function GrimoireView({ players, setPlayers, scriptRoles, onOpenR
                       )}
                     </div>
 
-                    <div style={{ fontSize: '0.8rem', color: localized ? 'var(--accent-gold-light)' : 'var(--text-muted)', marginTop: '2px', fontWeight: 600 }}>
+                    <div style={{ fontSize: '0.82rem', color: localized ? 'var(--accent-gold-light)' : 'var(--text-muted)', marginTop: '2px', fontWeight: 600 }}>
                       {localized ? localized.name : 'Tap to set role...'}
                     </div>
 
                     {player.tokens && player.tokens.length > 0 && (
                       <div style={{ display: 'flex', gap: '4px', marginTop: '6px', flexWrap: 'wrap' }}>
                         {player.tokens.map(tokenItem => (
-                          <span key={tokenItem} style={{ fontSize: '0.65rem', background: 'rgba(212, 175, 55, 0.15)', color: 'var(--accent-gold)', padding: '2px 6px', borderRadius: '4px', border: '1px solid var(--border-glow)' }}>
+                          <span key={tokenItem} style={{ fontSize: '0.68rem', background: 'rgba(212, 175, 55, 0.18)', color: 'var(--accent-gold)', padding: '2px 8px', borderRadius: '6px', border: '1px solid var(--border-glow)', fontWeight: 600 }}>
                             {tokenItem}
                           </span>
                         ))}
@@ -301,13 +306,13 @@ export default function GrimoireView({ players, setPlayers, scriptRoles, onOpenR
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }} onClick={e => e.stopPropagation()}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={e => e.stopPropagation()}>
                   <button
                     onClick={() => handleMoveSeat(idx, 'left')}
                     title="Swap seat with previous player"
-                    style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', borderRadius: '6px', padding: '6px', cursor: 'pointer' }}
+                    style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', borderRadius: '8px', padding: '8px', cursor: 'pointer' }}
                   >
-                    <ArrowUpDown size={14} />
+                    <ArrowUpDown size={15} />
                   </button>
                   <button
                     onClick={() => handleToggleAlive(player.id)}
@@ -315,17 +320,17 @@ export default function GrimoireView({ players, setPlayers, scriptRoles, onOpenR
                       background: player.isAlive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
                       border: `1px solid ${player.isAlive ? '#10b981' : '#ef4444'}`,
                       color: player.isAlive ? '#10b981' : '#ef4444',
-                      borderRadius: '8px',
-                      padding: '6px 10px',
+                      borderRadius: '10px',
+                      padding: '8px 12px',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '4px',
-                      fontSize: '0.75rem',
-                      fontWeight: 600
+                      gap: '6px',
+                      fontSize: '0.8rem',
+                      fontWeight: 700
                     }}
                   >
-                    {player.isAlive ? <Heart size={14} /> : <Skull size={14} />}
+                    {player.isAlive ? <Heart size={15} /> : <Skull size={15} />}
                     {player.isAlive ? t.alive : t.dead}
                   </button>
                 </div>
@@ -341,40 +346,40 @@ export default function GrimoireView({ players, setPlayers, scriptRoles, onOpenR
         return (
           <div className="modal-overlay" onClick={() => setSelectedPlayerId(null)}>
             <div className="modal-sheet" onClick={e => e.stopPropagation()}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   {localized?.image && (
-                    <img src={localized.image} alt="" style={{ width: '36px', height: '36px' }} />
+                    <img src={localized.image} alt="" style={{ width: '40px', height: '40px' }} />
                   )}
-                  <h3 className="font-serif" style={{ color: 'var(--accent-gold)', fontSize: '1.2rem' }}>
+                  <h3 className="font-serif" style={{ color: 'var(--accent-gold)', fontSize: '1.3rem' }}>
                     {t.manage} {selectedPlayer.name}
                   </h3>
                 </div>
-                <button onClick={() => setSelectedPlayerId(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
+                <button onClick={() => setSelectedPlayerId(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.3rem', cursor: 'pointer' }}>✕</button>
               </div>
 
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>{t.playerName}</label>
-                <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ marginBottom: '18px' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>{t.playerName}</label>
+                <div style={{ display: 'flex', gap: '10px' }}>
                   <input
                     type="text"
                     defaultValue={selectedPlayer.name}
                     onChange={e => setEditingPlayerName(e.target.value)}
-                    style={{ flex: 1, background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '8px 12px', color: '#fff', fontSize: '0.9rem' }}
+                    style={{ flex: 1, background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '10px 14px', color: '#fff', fontSize: '0.95rem', fontWeight: 600 }}
                   />
                   <button className="btn btn-secondary btn-sm" onClick={() => handleSaveName(selectedPlayer.id)}>{t.save}</button>
                 </div>
               </div>
 
-              <div style={{ marginBottom: '16px', background: 'var(--bg-primary)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+              <div style={{ marginBottom: '18px', background: 'var(--bg-primary)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     {localized?.image && (
-                      <img src={localized.image} alt="" style={{ width: '44px', height: '44px' }} />
+                      <img src={localized.image} alt="" style={{ width: '48px', height: '48px' }} />
                     )}
                     <div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{t.assignedCharacter}</div>
-                      <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--accent-gold)' }}>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>{t.assignedCharacter}</div>
+                      <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--accent-gold)' }}>
                         {localized ? localized.name : 'Unassigned'}
                       </div>
                     </div>
@@ -384,14 +389,14 @@ export default function GrimoireView({ players, setPlayers, scriptRoles, onOpenR
                   </button>
                 </div>
                 {localized && (
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '8px', fontStyle: 'italic' }}>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '10px', fontStyle: 'italic', lineHeight: '1.4' }}>
                     "{localized.ability}"
                   </div>
                 )}
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>{t.statusReminders}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '18px' }}>
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-secondary)' }}>{t.statusReminders}</div>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                   {['Poisoned', 'Drunk', 'Safe', 'Madness', 'Demon Bluff'].map(tokenItem => {
                     const active = selectedPlayer.tokens?.includes(tokenItem);
@@ -403,10 +408,10 @@ export default function GrimoireView({ players, setPlayers, scriptRoles, onOpenR
                           background: active ? 'var(--accent-gold)' : 'var(--bg-primary)',
                           color: active ? '#000' : 'var(--text-primary)',
                           border: '1px solid var(--border-color)',
-                          padding: '6px 12px',
+                          padding: '8px 14px',
                           borderRadius: '20px',
-                          fontSize: '0.75rem',
-                          fontWeight: 600,
+                          fontSize: '0.78rem',
+                          fontWeight: 700,
                           cursor: 'pointer'
                         }}
                       >
@@ -417,8 +422,8 @@ export default function GrimoireView({ players, setPlayers, scriptRoles, onOpenR
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-primary)', padding: '10px 14px', borderRadius: '10px' }}>
-                <span style={{ fontSize: '0.85rem' }}>{t.ghostVoteToken}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-primary)', padding: '12px 16px', borderRadius: '12px' }}>
+                <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{t.ghostVoteToken}</span>
                 <button
                   className={`btn btn-sm ${selectedPlayer.hasGhostVote ? 'btn-primary' : 'btn-secondary'}`}
                   onClick={() => handleToggleGhostVote(selectedPlayer.id)}
