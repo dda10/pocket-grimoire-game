@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { generateStepByStepGuide, generateAIStrategicOverrides } from '../services/aiGuideService';
+import { generateStepByStepGuide, generateAIStrategicOverrides, DEFAULT_AI_KEY } from '../services/aiGuideService';
 import { UI_TRANSLATIONS } from '../data/translations';
 import { Sparkles, Moon, Sun, CheckCircle2, Circle, ShieldAlert, Key, Zap, Info, Edit3, Target, Scale, Shield, Skull, Plus, Globe, Cpu } from 'lucide-react';
 
 export default function AIGuideView({ currentPhase, dayNumber, players, language }) {
   const [activeSubTab, setActiveSubTab] = useState('steps'); // 'steps', 'advisor', 'notes'
   const [completedSteps, setCompletedSteps] = useState(new Set());
-  const [apiKey, setApiKey] = useState(localStorage.getItem('gemini_api_key') || '');
+  const [apiKey, setApiKey] = useState(localStorage.getItem('gemini_api_key') || DEFAULT_AI_KEY);
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
 
   // Strategic Win Goal & Storyteller Journal Notes State
@@ -58,7 +58,7 @@ export default function AIGuideView({ currentPhase, dayNumber, players, language
           <div>
             <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#f3e8ff' }}>{t.llmAssistant}</div>
             <div style={{ fontSize: '0.75rem', color: '#d8b4fe' }}>
-              {apiKey ? (isVi ? '⚡ Đã Kết Nối Gemini 2.0 Flash / Vercel Gateway' : '⚡ Live Gemini / Gateway Connected') : t.builtInRules}
+              {isVi ? '⚡ Đã Kết Nối Direct AI Studio (Miễn Phí 100%)' : '⚡ Direct AI Studio Connected (100% Free)'}
             </div>
           </div>
         </div>
@@ -67,7 +67,7 @@ export default function AIGuideView({ currentPhase, dayNumber, players, language
           onClick={() => setShowApiKeyModal(true)}
           style={{ background: 'rgba(255, 255, 255, 0.1)', border: '1px solid rgba(255, 255, 255, 0.2)', color: '#fff', borderRadius: '8px', padding: '6px 10px', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
         >
-          <Cpu size={12} /> Model
+          <Cpu size={12} /> Key
         </button>
       </div>
 
@@ -222,7 +222,7 @@ export default function AIGuideView({ currentPhase, dayNumber, players, language
       {activeSubTab === 'advisor' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ background: 'var(--bg-card)', padding: '12px 14px', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            💡 <strong style={{ color: 'var(--accent-gold)' }}>AI Strategic Guidance:</strong> {isVi ? 'AI đang tự động phân tích Nhật ký Note & Mục tiêu của bạn để đề xuất chiến thuật ghi đè tiếp theo!' : 'AI analyzes your live notes & goal to recommend dynamic overrides!'}
+            💡 <strong style={{ color: 'var(--accent-gold)' }}>AI Strategic Guidance:</strong> {isVi ? 'AI đang gọi trực tiếp AI Studio để đề xuất chiến thuật ghi đè dựa theo Nhật ký Note của bạn!' : 'AI calls AI Studio directly to recommend dynamic overrides based on your notes!'}
           </div>
 
           {overrides.map(rec => (
@@ -300,46 +300,34 @@ export default function AIGuideView({ currentPhase, dayNumber, players, language
         </div>
       )}
 
-      {/* AI MODEL & VERCEL GATEWAY MODAL */}
+      {/* AI MODEL MODAL */}
       {showApiKeyModal && (
         <div className="modal-overlay" onClick={() => setShowApiKeyModal(false)}>
           <div className="modal-sheet" onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <h3 className="font-serif" style={{ color: 'var(--accent-gold)' }}>
-                {isVi ? 'Cấu Hình AI Model & Vercel Gateway' : 'AI Model & Gateway Config'}
+                {isVi ? 'Cấu Hình Gọi Trực Tiếp AI Studio' : 'Direct AI Studio Config'}
               </h3>
               <button onClick={() => setShowApiKeyModal(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}>✕</button>
             </div>
 
             <div style={{ background: 'rgba(16, 185, 129, 0.12)', border: '1px solid #10b981', borderRadius: '12px', padding: '12px', marginBottom: '14px' }}>
               <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#10b981', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Zap size={16} /> {isVi ? 'Model Khuyên Dùng Miễn Phí 100%:' : 'Recommended 100% Free Model:'}
+                <Zap size={16} /> {isVi ? 'Đã Cấu Hình Key Trực Tiếp Miễn Phí:' : 'Direct Free Key Configured:'}
               </div>
-              <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#fff' }}>Google Gemini 2.0 Flash / Gemini 1.5 Flash</div>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fff', wordBreak: 'break-all' }}>{apiKey}</div>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px', lineHeight: '1.4' }}>
                 {isVi 
-                  ? 'Google miễn phí 15 yêu cầu/phút tại aistudio.google.com. Tốc độ siêu nhanh dưới 1 giây, phản hồi tiếng Việt chuẩn xác.'
-                  : 'Google provides 15 free requests/min at aistudio.google.com. Ultra-fast <1s response time.'}
-              </p>
-            </div>
-
-            <div style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '12px', marginBottom: '14px' }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent-gold)', marginBottom: '4px' }}>
-                🌐 Vercel AI Gateway
-              </div>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
-                {isVi 
-                  ? 'Khi deploy trên Vercel, bạn có thể thêm biến GEMINI_API_KEY trong Vercel Project Settings để toàn bộ người chơi sử dụng tự động mà không cần nhập key thủ công!'
-                  : 'Add GEMINI_API_KEY in Vercel Project Settings for automatic serverless gateway routing!'}
+                  ? 'Ứng dụng đang gọi trực tiếp API AI Studio. Bạn không cần phải add thẻ ngân hàng trên Vercel!'
+                  : 'App connects directly to AI Studio without requiring credit card on Vercel.'}
               </p>
             </div>
 
             <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>
-              {isVi ? 'Nhập Google Gemini API Key Thủ Công (Tùy chọn)' : 'Enter Custom Gemini API Key (Optional)'}
+              {isVi ? 'Thay Đổi API Key Khác (Nếu cần)' : 'Change API Key (Optional)'}
             </label>
             <input
-              type="password"
-              placeholder="AIzaSy..."
+              type="text"
               value={apiKey}
               onChange={e => setApiKey(e.target.value)}
               style={{ width: '100%', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '10px 12px', color: '#fff', marginBottom: '14px' }}

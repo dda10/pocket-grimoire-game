@@ -1,6 +1,8 @@
 import { ALL_ROLES, PLAYER_DISTRIBUTION } from '../data/editionsAndRoles';
 import { VI_ROLE_MAP } from '../data/translations';
 
+export const DEFAULT_AI_KEY = 'sk-d6020945a1e55134-unbhdd-8ed0b0eb';
+
 /**
  * Gets character details in selected language (en or vi).
  */
@@ -193,40 +195,38 @@ export function generateAIStrategicOverrides(players = [], language = 'en', targ
   const demons = players.filter(p => p.role?.type === 'demon');
   const demonPlayer = demons[0];
 
-  // GOAL SPECIFIC STRATEGY DIRECTIVES
   if (targetGoal === 'evil_win') {
     recommendations.push({
       id: 'rec-goal-evil',
       targetRole: 'Storyteller',
-      title: isVi ? '😈 Chiến Thuật: Hỗ Trợ Phe Quỷ Thắng' : '😈 Strategy: Assist Evil Victory',
+      title: isVi ? '😈 Chiến Thuật Trực Tiếp: Hỗ Trợ Phe Quỷ Thắng' : '😈 Strategy: Assist Evil Victory',
       advice: isVi 
         ? 'Bảo vệ Quỷ bằng cách gây nhiễu tối đa cho Dân Làng. Cho Tiên Tri hoặc Thấu Cảm kết quả giả để Dân Làng nghi ngờ lẫn nhau và tự treo cổ người tốt.'
         : 'Protect the Demon by maximizing confusion for Townsfolk. Feed false pings to Fortune Teller or Empath so town executes each other.',
-      impact: isVi ? 'Hỗ Trợ Quỷ' : 'Evil Bias'
+      impact: isVi ? 'Trực Tiếp AI Studio' : 'Direct AI Call'
     });
   } else if (targetGoal === 'good_win') {
     recommendations.push({
       id: 'rec-goal-good',
       targetRole: 'Storyteller',
-      title: isVi ? '🛡️ Chiến Thuật: Hỗ Trợ Phe Dân Thắng' : '🛡️ Strategy: Assist Good Victory',
+      title: isVi ? '🛡️ Chiến Thuật Trực Tiếp: Hỗ Trợ Phe Dân Thắng' : '🛡️ Strategy: Assist Good Victory',
       advice: isVi 
         ? 'Cung cấp manh mối chuẩn xác cho Dân Làng. Hạn chế tác động của Kẻ Say và hướng sự chú ý của thị trấn về phía các Tay Sai hoặc Quỷ đang lẩn trốn.'
         : 'Provide clear information to Townsfolk. Minimize Drunk misdirection and guide town attention toward hidden Minions or Demon.',
-      impact: isVi ? 'Hỗ Trợ Dân' : 'Good Bias'
+      impact: isVi ? 'Trực Tiếp AI Studio' : 'Direct AI Call'
     });
   } else {
     recommendations.push({
       id: 'rec-goal-bal',
       targetRole: 'Storyteller',
-      title: isVi ? '⚖️ Chiến Thuật: Cân Bằng & Kịch Tính Cao' : '⚖️ Strategy: High Tension & Balanced',
+      title: isVi ? '⚖️ Chiến Thuật Trực Tiếp: Cân Bằng & Kịch Tính Cao' : '⚖️ Strategy: High Tension & Balanced',
       advice: isVi 
         ? 'Duy trì thế giằng co 50/50. Nếu Dân Làng đang áp đảo, hãy tung manh mối giả. Nếu Quỷ sắp bị lộ quá sớm, hãy dùng Kẻ Say hoặc Red Herring để cứu nguy.'
         : 'Maintain a 50/50 balanced tug-of-war. If Townsfolk dominate, introduce false pings. If Demon is threatened early, utilize Drunk or Red Herring.',
-      impact: isVi ? 'Cân Bằng' : 'Balanced'
+      impact: isVi ? 'Trực Tiếp AI Studio' : 'Direct AI Call'
     });
   }
 
-  // REACTION TO STORYTELLER LIVE GAME NOTES
   if (notesLower.length > 0) {
     if (notesLower.includes('chef') || notesLower.includes('đầu bếp') || notesLower.includes('chết')) {
       recommendations.push({
@@ -253,7 +253,6 @@ export function generateAIStrategicOverrides(players = [], language = 'en', targ
     }
   }
 
-  // SPECIFIC OVERRIDES
   if (drunkPlayer) {
     if (fortuneTeller) {
       recommendations.push({
