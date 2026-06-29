@@ -1,7 +1,8 @@
 import { ALL_ROLES, PLAYER_DISTRIBUTION } from '../data/editionsAndRoles';
 import { VI_ROLE_MAP } from '../data/translations';
 
-export const DEFAULT_AI_KEY = 'sk-d6020945a1e55134-unbhdd-8ed0b0eb';
+// Load securely from Vercel Environment Variables
+export const DEFAULT_AI_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
 
 /**
  * Gets character details in selected language (en or vi).
@@ -193,7 +194,6 @@ export function generateAIStrategicOverrides(players = [], language = 'en', targ
   const fortuneTeller = players.find(p => p.role?.id === 'fortune_teller');
   const empath = players.find(p => p.role?.id === 'empath');
   const demons = players.filter(p => p.role?.type === 'demon');
-  const demonPlayer = demons[0];
 
   if (targetGoal === 'evil_win') {
     recommendations.push({
@@ -203,7 +203,7 @@ export function generateAIStrategicOverrides(players = [], language = 'en', targ
       advice: isVi 
         ? 'Bảo vệ Quỷ bằng cách gây nhiễu tối đa cho Dân Làng. Cho Tiên Tri hoặc Thấu Cảm kết quả giả để Dân Làng nghi ngờ lẫn nhau và tự treo cổ người tốt.'
         : 'Protect the Demon by maximizing confusion for Townsfolk. Feed false pings to Fortune Teller or Empath so town executes each other.',
-      impact: isVi ? 'Trực Tiếp AI Studio' : 'Direct AI Call'
+      impact: isVi ? 'Vercel Env Key' : 'Vercel Env Key'
     });
   } else if (targetGoal === 'good_win') {
     recommendations.push({
@@ -213,7 +213,7 @@ export function generateAIStrategicOverrides(players = [], language = 'en', targ
       advice: isVi 
         ? 'Cung cấp manh mối chuẩn xác cho Dân Làng. Hạn chế tác động của Kẻ Say và hướng sự chú ý của thị trấn về phía các Tay Sai hoặc Quỷ đang lẩn trốn.'
         : 'Provide clear information to Townsfolk. Minimize Drunk misdirection and guide town attention toward hidden Minions or Demon.',
-      impact: isVi ? 'Trực Tiếp AI Studio' : 'Direct AI Call'
+      impact: isVi ? 'Vercel Env Key' : 'Vercel Env Key'
     });
   } else {
     recommendations.push({
@@ -223,7 +223,7 @@ export function generateAIStrategicOverrides(players = [], language = 'en', targ
       advice: isVi 
         ? 'Duy trì thế giằng co 50/50. Nếu Dân Làng đang áp đảo, hãy tung manh mối giả. Nếu Quỷ sắp bị lộ quá sớm, hãy dùng Kẻ Say hoặc Red Herring để cứu nguy.'
         : 'Maintain a 50/50 balanced tug-of-war. If Townsfolk dominate, introduce false pings. If Demon is threatened early, utilize Drunk or Red Herring.',
-      impact: isVi ? 'Trực Tiếp AI Studio' : 'Direct AI Call'
+      impact: isVi ? 'Vercel Env Key' : 'Vercel Env Key'
     });
   }
 

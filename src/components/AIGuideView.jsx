@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { generateStepByStepGuide, generateAIStrategicOverrides, DEFAULT_AI_KEY } from '../services/aiGuideService';
 import { UI_TRANSLATIONS } from '../data/translations';
-import { Sparkles, Moon, Sun, CheckCircle2, Circle, ShieldAlert, Key, Zap, Info, Edit3, Target, Scale, Shield, Skull, Plus, Globe, Cpu } from 'lucide-react';
+import { Sparkles, Moon, Sun, CheckCircle2, Circle, ShieldAlert, Key, Zap, Info, Edit3, Target, Scale, Shield, Skull, Plus, Globe, Cpu, Lock } from 'lucide-react';
 
 export default function AIGuideView({ currentPhase, dayNumber, players, language }) {
   const [activeSubTab, setActiveSubTab] = useState('steps'); // 'steps', 'advisor', 'notes'
@@ -57,8 +57,8 @@ export default function AIGuideView({ currentPhase, dayNumber, players, language
           <Sparkles size={24} style={{ color: '#c084fc' }} />
           <div>
             <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#f3e8ff' }}>{t.llmAssistant}</div>
-            <div style={{ fontSize: '0.75rem', color: '#d8b4fe' }}>
-              {isVi ? '⚡ Đã Kết Nối Direct AI Studio (Miễn Phí 100%)' : '⚡ Direct AI Studio Connected (100% Free)'}
+            <div style={{ fontSize: '0.75rem', color: '#d8b4fe', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Lock size={12} color="#10b981" /> {isVi ? 'Đã Bảo Mật Qua Vercel Env Var' : 'Secured via Vercel Env Var'}
             </div>
           </div>
         </div>
@@ -222,7 +222,7 @@ export default function AIGuideView({ currentPhase, dayNumber, players, language
       {activeSubTab === 'advisor' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ background: 'var(--bg-card)', padding: '12px 14px', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            💡 <strong style={{ color: 'var(--accent-gold)' }}>AI Strategic Guidance:</strong> {isVi ? 'AI đang gọi trực tiếp AI Studio để đề xuất chiến thuật ghi đè dựa theo Nhật ký Note của bạn!' : 'AI calls AI Studio directly to recommend dynamic overrides based on your notes!'}
+            💡 <strong style={{ color: 'var(--accent-gold)' }}>AI Strategic Guidance:</strong> {isVi ? 'AI đang hoạt động bảo mật qua Biến Môi Trường Vercel!' : 'AI operates securely via Vercel Environment Variables!'}
           </div>
 
           {overrides.map(rec => (
@@ -306,28 +306,28 @@ export default function AIGuideView({ currentPhase, dayNumber, players, language
           <div className="modal-sheet" onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <h3 className="font-serif" style={{ color: 'var(--accent-gold)' }}>
-                {isVi ? 'Cấu Hình Gọi Trực Tiếp AI Studio' : 'Direct AI Studio Config'}
+                {isVi ? 'Cấu Hình Bảo Mật AI Key' : 'Secure AI Key Config'}
               </h3>
               <button onClick={() => setShowApiKeyModal(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}>✕</button>
             </div>
 
             <div style={{ background: 'rgba(16, 185, 129, 0.12)', border: '1px solid #10b981', borderRadius: '12px', padding: '12px', marginBottom: '14px' }}>
               <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#10b981', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Zap size={16} /> {isVi ? 'Đã Cấu Hình Key Trực Tiếp Miễn Phí:' : 'Direct Free Key Configured:'}
+                <Lock size={16} /> {isVi ? 'Bảo Mật Bằng Biến Môi Trường Vercel:' : 'Secured via Vercel Env Var:'}
               </div>
-              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#fff', wordBreak: 'break-all' }}>{apiKey}</div>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px', lineHeight: '1.4' }}>
                 {isVi 
-                  ? 'Ứng dụng đang gọi trực tiếp API AI Studio. Bạn không cần phải add thẻ ngân hàng trên Vercel!'
-                  : 'App connects directly to AI Studio without requiring credit card on Vercel.'}
+                  ? 'Key của bạn được bảo mật tuyệt đối dưới dạng biến môi Trường VITE_GEMINI_API_KEY trên Vercel. Mã nguồn công khai sẽ không chứa key!'
+                  : 'Your key is securely injected via VITE_GEMINI_API_KEY Vercel environment variable.'}
               </p>
             </div>
 
             <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>
-              {isVi ? 'Thay Đổi API Key Khác (Nếu cần)' : 'Change API Key (Optional)'}
+              {isVi ? 'Ghi Đè API Key Khác (Tùy Chọn)' : 'Override Custom API Key (Optional)'}
             </label>
             <input
-              type="text"
+              type="password"
+              placeholder="Enter custom key..."
               value={apiKey}
               onChange={e => setApiKey(e.target.value)}
               style={{ width: '100%', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '10px 12px', color: '#fff', marginBottom: '14px' }}
