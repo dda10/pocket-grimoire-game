@@ -73,12 +73,6 @@ export function generateStepByStepGuide(phase, dayNumber, players = [], language
   const steps = [];
   const isVi = language === 'vi';
 
-  // Helper to find assigned player for a role
-  const getAssignedPlayerName = (roleId) => {
-    const p = players.find(player => player.role?.id === roleId);
-    return p ? p.name : (isVi ? 'Chưa phân người' : 'Unassigned');
-  };
-
   if (phase === 'night' && dayNumber === 1) {
     steps.push({
       id: 'step-intro',
@@ -87,7 +81,6 @@ export function generateStepByStepGuide(phase, dayNumber, players = [], language
       icon: 'Moon'
     });
 
-    // Minion info mapped to exact player names
     const minions = players.filter(p => p.role?.type === 'minion');
     const minionNames = minions.map(p => p.name).join(', ') || (isVi ? 'Các Tay Sai' : 'Minions');
     const demons = players.filter(p => p.role?.type === 'demon');
@@ -111,7 +104,6 @@ export function generateStepByStepGuide(phase, dayNumber, players = [], language
       icon: 'Skull'
     });
 
-    // Waking roles in firstNight order mapped to names
     const wakingPlayers = players
       .filter(p => p.role && p.role.firstNight > 0)
       .sort((a, b) => a.role.firstNight - b.role.firstNight);
@@ -188,19 +180,82 @@ export function generateStepByStepGuide(phase, dayNumber, players = [], language
 }
 
 /**
- * AI Strategic Advisor: Generates dynamic difficulty override recommendations for the Storyteller mapped to exact player names.
+ * AI Strategic Advisor: Generates dynamic difficulty override recommendations reading Storyteller Notes & Target Win Goal.
  */
-export function generateAIStrategicOverrides(players = [], language = 'en') {
+export function generateAIStrategicOverrides(players = [], language = 'en', targetGoal = 'balanced', gameNotes = '') {
   const recommendations = [];
   const isVi = language === 'vi';
+  const notesLower = gameNotes.toLowerCase();
 
   const drunkPlayer = players.find(p => p.role?.id === 'drunk');
   const fortuneTeller = players.find(p => p.role?.id === 'fortune_teller');
   const empath = players.find(p => p.role?.id === 'empath');
+  const demons = players.filter(p => p.role?.type === 'demon');
+  const demonPlayer = demons[0];
 
+  // GOAL SPECIFIC STRATEGY DIRECTIVES
+  if (targetGoal === 'evil_win') {
+    recommendations.push({
+      id: 'rec-goal-evil',
+      targetRole: 'Storyteller',
+      title: isVi ? '😈 Chiến Thuật: Hỗ Trợ Phe Quỷ Thắng' : '😈 Strategy: Assist Evil Victory',
+      advice: isVi 
+        ? 'Bảo vệ Quỷ bằng cách gây nhiễu tối đa cho Dân Làng. Cho Tiên Tri hoặc Thấu Cảm kết quả giả để Dân Làng nghi ngờ lẫn nhau và tự treo cổ người tốt.'
+        : 'Protect the Demon by maximizing confusion for Townsfolk. Feed false pings to Fortune Teller or Empath so town executes each other.',
+      impact: isVi ? 'Hỗ Trợ Quỷ' : 'Evil Bias'
+    });
+  } else if (targetGoal === 'good_win') {
+    recommendations.push({
+      id: 'rec-goal-good',
+      targetRole: 'Storyteller',
+      title: isVi ? '🛡️ Chiến Thuật: Hỗ Trợ Phe Dân Thắng' : '🛡️ Strategy: Assist Good Victory',
+      advice: isVi 
+        ? 'Cung cấp manh mối chuẩn xác cho Dân Làng. Hạn chế tác động của Kẻ Say và hướng sự chú ý của thị trấn về phía các Tay Sai hoặc Quỷ đang lẩn trốn.'
+        : 'Provide clear information to Townsfolk. Minimize Drunk misdirection and guide town attention toward hidden Minions or Demon.',
+      impact: isVi ? 'Hỗ Trợ Dân' : 'Good Bias'
+    });
+  } else {
+    recommendations.push({
+      id: 'rec-goal-bal',
+      targetRole: 'Storyteller',
+      title: isVi ? '⚖️ Chiến Thuật: Cân Bằng & Kịch Tính Cao' : '⚖️ Strategy: High Tension & Balanced',
+      advice: isVi 
+        ? 'Duy trì thế giằng co 50/50. Nếu Dân Làng đang áp đảo, hãy tung manh mối giả. Nếu Quỷ sắp bị lộ quá sớm, hãy dùng Kẻ Say hoặc Red Herring để cứu nguy.'
+        : 'Maintain a 50/50 balanced tug-of-war. If Townsfolk dominate, introduce false pings. If Demon is threatened early, utilize Drunk or Red Herring.',
+      impact: isVi ? 'Cân Bằng' : 'Balanced'
+    });
+  }
+
+  // REACTION TO STORYTELLER LIVE GAME NOTES
+  if (notesLower.length > 0) {
+    if (notesLower.includes('chef') || notesLower.includes('đầu bếp') || notesLower.includes('chết')) {
+      recommendations.push({
+        id: 'rec-note-chef',
+        targetRole: 'Storyteller Note',
+        title: isVi ? '📝 Xử Lý Nhật Ký: Biến Số Chết Chóc' : '📝 Note Adaptation: Death Variables',
+        advice: isVi 
+          ? `Theo nhật ký của bạn: Vai trò đã chết/bị lộ. Hãy chuyển hướng thông tin sang cho ${fortuneTeller ? fortuneTeller.name : (demons[0]?.name || 'Quỷ')} để điều phối lại nhịp độ trận đấu theo mục tiêu ${targetGoal === 'evil_win' ? 'Quỷ Thắng' : targetGoal === 'good_win' ? 'Dân Thắng' : 'Cân Bằng'}.`
+          : `Based on your note: Key roles died or claimed. Pivot info focus to keep the game aligned with your ${targetGoal} objective.`,
+        impact: isVi ? 'Điều Chỉnh Nhật Ký' : 'Live Note Pivot'
+      });
+    }
+
+    if (notesLower.includes('nghi') || notesLower.includes('suspect') || notesLower.includes('fake')) {
+      recommendations.push({
+        id: 'rec-note-suspect',
+        targetRole: 'Storyteller Note',
+        title: isVi ? '📝 Xử Lý Nhật Ký: Nghi Ngờ Trong Thị Trấn' : '📝 Note Adaptation: Suspicion Flow',
+        advice: isVi 
+          ? `Nhật ký ghi nhận có sự nghi ngờ giả/thật. ${targetGoal === 'evil_win' ? 'Hãy tiếp tục đẩy sâu sự nghi ngờ vào người chơi phe tốt!' : 'Hãy cho Tiên Tri hoặc thông tin chuẩn để minh oan cho người tốt.'}`
+          : `Notes indicate active suspicion. Direct next night info to adjust tension accordingly.`,
+        impact: isVi ? 'Xử Lý Nhật Ký' : 'Note Adapted'
+      });
+    }
+  }
+
+  // SPECIFIC OVERRIDES
   if (drunkPlayer) {
     if (fortuneTeller) {
-      const ftName = fortuneTeller.name;
       recommendations.push({
         id: 'rec-drunk-ft',
         targetRole: 'Drunk',
@@ -218,40 +273,6 @@ export function generateAIStrategicOverrides(players = [], language = 'en') {
       });
     }
   }
-
-  if (fortuneTeller) {
-    const goodPlayers = players.filter(p => p.role?.type === 'townsfolk' || p.role?.type === 'outsider');
-    const targetRedHerring = goodPlayers.find(p => p.id !== fortuneTeller.id);
-    if (targetRedHerring) {
-      recommendations.push({
-        id: 'rec-ft-herring',
-        targetRole: 'Fortune Teller',
-        title: isVi ? `Manh Mối Giả -> ${targetRedHerring.name}` : `Red Herring -> ${targetRedHerring.name}`,
-        advice: isVi ? `Chỉ định người chơi ${targetRedHerring.name} làm Red Herring cho Tiên Tri (${fortuneTeller.name}). Khi ${fortuneTeller.name} soi ${targetRedHerring.name}, trả về kết quả CÓ là Quỷ để gây nhiễu.` : `Designate player ${targetRedHerring.name} as the Fortune Teller Red Herring for ${fortuneTeller.name}. When ${fortuneTeller.name} points at ${targetRedHerring.name}, return a positive Demon ping to confuse town.`,
-        impact: isVi ? 'Gây Nhiễu' : 'Misdirection'
-      });
-    }
-  }
-
-  const demons = players.filter(p => p.role?.type === 'demon');
-  if (demons.length > 0) {
-    const demonPlayer = demons[0];
-    recommendations.push({
-      id: 'rec-demon-bluffs',
-      targetRole: 'Demon',
-      title: isVi ? `Farol Giả Cho Quỷ -> ${demonPlayer.name}` : `Demon Bluffs -> ${demonPlayer.name}`,
-      advice: isVi ? `Đưa cho người chơi Quỷ [${demonPlayer.name}] các thẻ giả như Ngại Ngùng hoặc Đồ Tể để họ an tâm mạo danh mà không sợ bị lộ sớm.` : `Provide Demon player [${demonPlayer.name}] high-power character bluffs so they can fake information safely.`,
-      impact: isVi ? 'Cân Bằng' : 'Balancing'
-    });
-  }
-
-  recommendations.push({
-    id: 'rec-std-mode',
-    targetRole: 'Storyteller',
-    title: isVi ? 'Nhịp Độ Tối Ưu' : 'Optimal Flow',
-    advice: isVi ? 'Giữ cho các hành động ban đêm diễn ra mượt mà và đảm bảo người chơi ghi nhớ vai trò của họ.' : 'Keep night actions moving smoothly and ensure players write down their claimed roles during Day discussions.',
-    impact: isVi ? 'Tiêu Chuẩn' : 'Standard'
-  });
 
   return recommendations;
 }
