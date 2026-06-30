@@ -18,6 +18,7 @@ export default function PlayerSetupMode({ players, setPlayers, scriptRoles, onFi
   const localizedRole = getLocalizedRole(currentPlayer.role, language);
 
   const handleNextPlayer = () => {
+    // Save current player name and role
     const updatedPlayers = [...players];
     updatedPlayers[currentSeatIndex] = {
       ...currentPlayer,
@@ -29,14 +30,15 @@ export default function PlayerSetupMode({ players, setPlayers, scriptRoles, onFi
     };
     setPlayers(updatedPlayers);
 
+    // Proceed to next player and AUTOMATICALLY reset reveal state to hide the token!
     if (currentSeatIndex < players.length - 1) {
       const nextIdx = currentSeatIndex + 1;
       setCurrentSeatIndex(nextIdx);
       const nextDefaultName = isVi ? `Người chơi ${nextIdx + 1}` : `Player ${nextIdx + 1}`;
       setPlayerNameInput(players[nextIdx]?.name || nextDefaultName);
-      setIsRevealed(false);
+      setIsRevealed(false); // Instantly hide the role for the next player!
     } else {
-      // Setup finished: Show secure handing-to-storyteller screen first!
+      // All players finished setup: show secure Storyteller lock screen
       setIsSetupComplete(true);
     }
   };
@@ -148,7 +150,7 @@ export default function PlayerSetupMode({ players, setPlayers, scriptRoles, onFi
 
         <button className="btn btn-primary" style={{ width: '100%', padding: '14px', fontSize: '1rem' }} onClick={handleNextPlayer}>
           {currentSeatIndex < players.length - 1 ? (
-            <>{t.passToNext} <ArrowRight size={18} /></>
+            <>{isVi ? 'Xác Nhận & Chuyển Người Tiếp Theo' : 'Confirm & Next Player'} <ArrowRight size={18} /></>
           ) : (
             <>{t.completeSetup} <CheckCircle2 size={18} /></>
           )}
